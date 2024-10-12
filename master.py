@@ -9,10 +9,10 @@ import argparse
 import random
 import math
 import pprint
-import score
 
 # import bot functions here
-
+import score
+import go
 
 
 def RadianToDegree(angle):
@@ -200,8 +200,8 @@ GameServer.sendMessage(ServerMessageTypes.CREATETANK, {'Name': args.name})
 current_time = 0
 enemy_position = None
 enemy_last_seen_time = -1000
-my_health = None
-my_ammo = None
+my_health = 1
+my_ammo = 1
 my_position = None
 my_heading = None
 my_turret_heading = None
@@ -218,6 +218,10 @@ while True:
 				enemy_last_seen_time = current_time
 			else:
 				my_position = (message["X"], message["Y"])
+				my_health = message['Health']
+				my_ammo = message['Ammo']
+				my_heading = message['Heading']
+				my_turret_heading = message['TurretHeading']
 		else:
 			pickup = {'Type': message['Type'], 'X': message['X'], 'Y': message['Y'], 'TimeSeen': current_time}
 			pickup_position = (message['X'], message['Y'])
@@ -225,18 +229,23 @@ while True:
 
 	elif message["messageType"] == ServerMessageTypes.KILL:
 		score.score(GameServer, my_position)
+
 	if my_position and enemy_position and current_time - enemy_last_seen_time < 3:
 		heading = 360 - GetHeading(my_position[0], my_position[1], enemy_position[0], enemy_position[1])
 		GameServer.sendMessage(ServerMessageTypes.TURNTURRETTOHEADING, {"Amount": heading})
 		GameServer.sendMessage(ServerMessageTypes.FIRE)
 		logging.info(f"Turning to heading {heading}")
+	elif my_ammo == 0:
+		go.go(GameServer, my_position[0], my_position[1], 0, 0)
 	
 	# remove any pickups that we haven't seen in a while
 	visible_pickups = {position:pickup for position,pickup in visible_pickups.items() if current_time - pickup['TimeSeen'] < 5}
 
-	pp = pprint.PrettyPrinter()
-	print("visible pickups")
-	pp.pprint(visible_pickups)
+	print(f"health: {my_health}, ammo: {my_ammo}")
+
+	# pp = pprint.PrettyPrinter()
+	# print("visible pickups")
+	# pp.pprint(visible_pickups)
 
 	
 	
