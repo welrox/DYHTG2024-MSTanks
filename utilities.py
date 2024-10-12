@@ -1,5 +1,8 @@
 
 import math
+
+TANK_SPEED = 10
+
 def CalculateDistance(ownX,ownY,otherX,otherY):
      headingX = otherX - ownX
      headingY = otherY - ownY
