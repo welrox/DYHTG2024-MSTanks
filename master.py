@@ -254,9 +254,9 @@ while True:
 		recent_ammo = GetMostRecentlySeenAmmo(visible_pickups, GameServer, my_position[0], my_position[1])
 		logging.info(recent_ammo)
 		if recent_ammo:
-			go.go(GameServer, my_position[0], my_position[1], recent_ammo[0], recent_ammo[1])
+			go.go_and_look(GameServer, my_position[0], my_position[1], recent_ammo[0], recent_ammo[1])
 		else:
-			go.go(GameServer, my_position[0], my_position[1], 0, 0)
+			go.go_and_look(GameServer, my_position[0], my_position[1], 0, 0)
 	
 	
 	# remove any pickups that we haven't seen in a while
