@@ -199,46 +199,44 @@ GameServer.sendMessage(ServerMessageTypes.CREATETANK, {'Name': args.name})
 # Main loop - read game messages, ignore them and randomly perform actions
 current_time = 0
 enemy_position = None
-enemy_last_seen_time = None
+enemy_last_seen_time = -1000
 my_health = None
 my_ammo = None
 my_position = None
 my_heading = None
 my_turret_heading = None
-while True:
-	# message = GameServer.readMessage()
 
-	# ################# do message handling here
-	# if message['messageType'] == ServerMessageTypes.OBJECTUPDATE: # message type 18
-	# 	if message['Name'] != args.name:
-	# 		enemy_position = (message['X'], message['Y'])
-	# 		enemy_last_seen_time = current_time
-	# 		print(f"enemy {(message['X'], message['Y'])}")
-	# 	else:
-	# 		my_position = (message['X'], message['Y'])
-	# 		my_heading = message['Heading']
-	# 		my_turret_heading = message['TurretHeading']
-	# 		my_health = message['Health']
-	# 		my_ammo = message['Ammo']
-	# 		print(f"me {(message['X'], message['Y'])}")
-	# else:
-	# 	print(f"unknown message {message}")
- 
+visible_pickups = {}
+while True:
+	################## do message handling here
 	message = GameServer.readMessage()
-	if message["messageType"] == ServerMessageTypes.OBJECTUPDATE and message["Type"] == "Tank":
-		print(message)
-		if message["Name"] != args.name:
-			enemy_position = (message["X"], message["Y"])
+	if message["messageType"] == ServerMessageTypes.OBJECTUPDATE:
+		if message["Type"] == "Tank":
+			#print(message)
+			if message["Name"] != args.name:
+				enemy_position = (message["X"], message["Y"])
+				enemy_last_seen_time = current_time
+			else:
+				my_position = (message["X"], message["Y"])
 		else:
-			my_position = (message["X"], message["Y"])
+			pickup = {'Type': message['Type'], 'X': message['X'], 'Y': message['Y'], 'TimeSeen': current_time}
+			pickup_position = (message['X'], message['Y'])
+			visible_pickups[pickup_position] = pickup
+
 	elif message["messageType"] == ServerMessageTypes.KILL:
 		score.score(GameServer, my_position)
-
-	if my_position and enemy_position:
+	if my_position and enemy_position and current_time - enemy_last_seen_time < 3:
 		heading = 360 - GetHeading(my_position[0], my_position[1], enemy_position[0], enemy_position[1])
 		GameServer.sendMessage(ServerMessageTypes.TURNTURRETTOHEADING, {"Amount": heading})
 		GameServer.sendMessage(ServerMessageTypes.FIRE)
 		logging.info(f"Turning to heading {heading}")
+	
+	# remove any pickups that we haven't seen in a while
+	visible_pickups = {position:pickup for position,pickup in visible_pickups.items() if current_time - pickup['TimeSeen'] < 5}
+
+	pp = pprint.PrettyPrinter()
+	print("visible pickups")
+	pp.pprint(visible_pickups)
 
 	
 	
