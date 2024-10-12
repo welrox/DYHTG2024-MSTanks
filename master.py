@@ -15,6 +15,7 @@ import random
 import score
 import go
 from LookForAmmo import *
+import hunt
 
 def RadianToDegree(angle):
 	return angle * (180.0 / math.pi)
@@ -257,7 +258,8 @@ while True:
 			go.go_and_look(GameServer, my_position[0], my_position[1], recent_ammo[0], recent_ammo[1])
 		else:
 			go.go_and_look(GameServer, my_position[0], my_position[1], 0, 0)
-	
+	else:
+		hunt.hunt(GameServer, my_position[0], my_position[1])
 	
 	# remove any pickups that we haven't seen in a while
 	visible_pickups = {position:pickup for position,pickup in visible_pickups.items() if current_time - pickup['TimeSeen'] < 5}
