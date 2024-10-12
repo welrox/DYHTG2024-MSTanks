@@ -243,7 +243,7 @@ while True:
 	
 	elif message["messageType"] == ServerMessageTypes.SNITCHPICKUP:
 		snitch_picked_up["flag"] = True
-		snitch_picked_up["holder"] = message["id"]
+		snitch_picked_up["holder"] = message["Id"]
 
 	if my_position and enemy_position and current_time - enemy_last_seen_time < 10 and my_ammo > 0 and not should_i_score:
 		attack.attack(GameServer, my_position, enemy_position, enemy_id, my_turret_heading, current_time)
