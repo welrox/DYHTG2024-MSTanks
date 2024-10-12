@@ -252,7 +252,7 @@ while True:
 		go.go(GameServer, my_position[0], my_position[1], new_x, new_y)
 		logging.info(f"Turning to heading {heading}")
 	elif my_ammo == 0 and not should_i_score:
-		recent_ammo = GetClosestPickup(visible_pickups, GameServer, my_position[0], my_position[1])
+		recent_ammo = GetClosestPickup(visible_pickups, my_position[0], my_position[1], "AmmoPickup")
 		logging.info(recent_ammo)
 		if recent_ammo:
 			go.go_and_look(GameServer, my_position[0], my_position[1], recent_ammo[0], recent_ammo[1])
