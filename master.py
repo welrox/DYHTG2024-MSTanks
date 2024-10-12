@@ -258,6 +258,15 @@ while True:
 			go.go_and_look(GameServer, my_position[0], my_position[1], recent_ammo[0], recent_ammo[1])
 		else:
 			go.go_and_look(GameServer, my_position[0], my_position[1], 0, 0)
+
+	elif my_health == 1 and not should_i_score:
+		recent_health = GetClosestPickup(visible_pickups, my_position[0], my_position[1], "HealthPickup")
+		logging.info(recent_health)
+		if recent_health:
+			go.go_and_look(GameServer, my_position[0], my_position[1], recent_health[0], recent_health[1])
+		else:
+			go.go_and_look(GameServer, my_position[0], my_position[1], 0, 0)
+
 	elif not should_i_score:
 		hunt.hunt(GameServer, my_position[0], my_position[1], my_turret_heading)
 
