@@ -9,6 +9,7 @@ import argparse
 import random
 import math
 import pprint
+import score
 
 # import bot functions here
 
@@ -205,25 +206,40 @@ my_position = None
 my_heading = None
 my_turret_heading = None
 while True:
+	# message = GameServer.readMessage()
+
+	# ################# do message handling here
+	# if message['messageType'] == ServerMessageTypes.OBJECTUPDATE: # message type 18
+	# 	if message['Name'] != args.name:
+	# 		enemy_position = (message['X'], message['Y'])
+	# 		enemy_last_seen_time = current_time
+	# 		print(f"enemy {(message['X'], message['Y'])}")
+	# 	else:
+	# 		my_position = (message['X'], message['Y'])
+	# 		my_heading = message['Heading']
+	# 		my_turret_heading = message['TurretHeading']
+	# 		my_health = message['Health']
+	# 		my_ammo = message['Ammo']
+	# 		print(f"me {(message['X'], message['Y'])}")
+	# else:
+	# 	print(f"unknown message {message}")
+ 
 	message = GameServer.readMessage()
-
-	################# do message handling here
-	if message['messageType'] == ServerMessageTypes.OBJECTUPDATE: # message type 18
-		if message['Name'] != args.name:
-			enemy_position = (message['X'], message['Y'])
-			enemy_last_seen_time = current_time
-			print(f"enemy {(message['X'], message['Y'])}")
+	if message["messageType"] == ServerMessageTypes.OBJECTUPDATE and message["Type"] == "Tank":
+		print(message)
+		if message["Name"] != args.name:
+			enemy_position = (message["X"], message["Y"])
 		else:
-			my_position = (message['X'], message['Y'])
-			my_heading = message['Heading']
-			my_turret_heading = message['TurretHeading']
-			my_health = message['Health']
-			my_ammo = message['Ammo']
-			print(f"me {(message['X'], message['Y'])}")
-	else:
-		print(f"unknown message {message}")
+			my_position = (message["X"], message["Y"])
+	elif message["messageType"] == ServerMessageTypes.KILL:
+		score.score(GameServer, my_position)
 
-	# do stuff here using bot functions
-	# ...
+	if my_position and enemy_position:
+		heading = 360 - GetHeading(my_position[0], my_position[1], enemy_position[0], enemy_position[1])
+		GameServer.sendMessage(ServerMessageTypes.TURNTURRETTOHEADING, {"Amount": heading})
+		GameServer.sendMessage(ServerMessageTypes.FIRE)
+		logging.info(f"Turning to heading {heading}")
+
+	
 	
 	current_time += 1
