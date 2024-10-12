@@ -1,4 +1,4 @@
-def findAmmo(pickups :dict, Gameserver, player_x, player_y):
+def GetMostRecentlySeenAmmo(pickups :dict, Gameserver, player_x, player_y):
     lowest = None
     lowest_coords = None
     for key, pickup in pickups:
