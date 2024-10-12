@@ -1,6 +1,3 @@
-from go import go
-from utilities import GetHeading, ServerMessageTypes
-
 def findAmmo(pickups :dict, Gameserver, player_x, player_y):
     lowest = None
     lowest_coords = None
