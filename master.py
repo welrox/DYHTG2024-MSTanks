@@ -246,24 +246,25 @@ while True:
 		snitch_picked_up["flag"] = True
 		snitch_picked_up["holder"] = message["Id"]
 
-	if my_position and enemy_position and current_time - enemy_last_seen_time < 10 and my_ammo > 0:
+	if my_position and enemy_position and current_time - enemy_last_seen_time < 10 and my_ammo > 0 and my_health > 1:
 		if should_i_score:
 			attack.attack_but_dont_strafe(GameServer, my_position, enemy_position, enemy_id, my_turret_heading, current_time)
 		else:
 			attack.attack(GameServer, my_position, enemy_position, enemy_id, my_turret_heading, current_time)
-	elif my_ammo == 0 and not should_i_score:
-		recent_ammo = GetClosestPickup(visible_pickups, my_position[0], my_position[1], "AmmoPickup")
-		logging.info(recent_ammo)
-		if recent_ammo:
-			go.go_and_look(GameServer, my_position[0], my_position[1], recent_ammo[0], recent_ammo[1])
-		else:
-			go.go_and_look(GameServer, my_position[0], my_position[1], 0, 0)
-
+   
 	elif my_health == 1 and not should_i_score:
 		recent_health = GetClosestPickup(visible_pickups, my_position[0], my_position[1], "HealthPickup")
 		logging.info(recent_health)
 		if recent_health:
 			go.go_and_look(GameServer, my_position[0], my_position[1], recent_health[0], recent_health[1])
+		else:
+			go.go_and_look(GameServer, my_position[0], my_position[1], 0, 0)
+   
+	elif my_ammo == 0 and not should_i_score:
+		recent_ammo = GetClosestPickup(visible_pickups, my_position[0], my_position[1], "AmmoPickup")
+		logging.info(recent_ammo)
+		if recent_ammo:
+			go.go_and_look(GameServer, my_position[0], my_position[1], recent_ammo[0], recent_ammo[1])
 		else:
 			go.go_and_look(GameServer, my_position[0], my_position[1], 0, 0)
 
