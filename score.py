@@ -1,5 +1,6 @@
 from utilities import *
 import go
+from time import sleep
 
 def score(GameServer, my_position):
     closest_goal = None
@@ -17,6 +18,7 @@ def score(GameServer, my_position):
         closest_goal = orange
 
     go.go(GameServer, my_position[0], my_position[1], closest_goal[0], closest_goal[1]*0.8)
+    sleep(8)
     go.go(GameServer, my_position[0], my_position[1], closest_goal[0], closest_goal[1]*1.5)
     
 
