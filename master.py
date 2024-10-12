@@ -9,11 +9,12 @@ import argparse
 import random
 import math
 import pprint
+import random
 
 # import bot functions here
 import score
 import go
-
+from LookForAmmo import *
 
 def RadianToDegree(angle):
 	return angle * (180.0 / math.pi)
@@ -230,13 +231,23 @@ while True:
 	elif message["messageType"] == ServerMessageTypes.KILL:
 		score.score(GameServer, my_position)
 
-	if my_position and enemy_position and current_time - enemy_last_seen_time < 3:
+	if my_position and enemy_position and current_time - enemy_last_seen_time < 3 and my_ammo > 0:
+		GameServer.sendMessage(ServerMessageTypes.STOPALL)
 		heading = 360 - GetHeading(my_position[0], my_position[1], enemy_position[0], enemy_position[1])
 		GameServer.sendMessage(ServerMessageTypes.TURNTURRETTOHEADING, {"Amount": heading})
 		GameServer.sendMessage(ServerMessageTypes.FIRE)
+  
+		new_x, new_y = random.randint(int(my_position[0]) - 10, int(my_position[0]) + 10), random.randint(int(my_position[1]) - 10, int(my_position[1]) + 10)
+		go.go(GameServer, my_position[0], my_position[1], new_x, new_y)
 		logging.info(f"Turning to heading {heading}")
 	elif my_ammo == 0:
-		go.go(GameServer, my_position[0], my_position[1], 0, 0)
+		recent_ammo = GetMostRecentlySeenAmmo(visible_pickups, GameServer, my_position[0], my_position[1])
+		logging.info(recent_ammo)
+		if recent_ammo:
+			go.go(GameServer, my_position[0], my_position[1], recent_ammo[0], recent_ammo[1])
+		else:
+			go.go(GameServer, my_position[0], my_position[1], 0, 0)
+	
 	
 	# remove any pickups that we haven't seen in a while
 	visible_pickups = {position:pickup for position,pickup in visible_pickups.items() if current_time - pickup['TimeSeen'] < 5}
