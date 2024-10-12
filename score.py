@@ -24,5 +24,5 @@ def score(GameServer, my_position):
     )
     GameServer.sendMessage(ServerMessageTypes.TURNTOHEADING, {"Amount": 360-heading})
     GameServer.sendMessage(
-        ServerMessageTypes.MOVEFORWARDDISTANCE, {"Amount": closest_dist}
+        ServerMessageTypes.MOVEFORWARDDISTANCE, {"Amount": closest_dist+10}
     )
