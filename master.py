@@ -16,6 +16,7 @@ import score
 import go
 from LookForAmmo import *
 import hunt
+import attack
 
 def RadianToDegree(angle):
 	return angle * (180.0 / math.pi)
@@ -200,6 +201,7 @@ GameServer.sendMessage(ServerMessageTypes.CREATETANK, {'Name': args.name})
 
 # Main loop - read game messages, ignore them and randomly perform actions
 current_time = 0
+enemy_id = None
 enemy_position = None
 enemy_last_seen_time = -1000
 my_health = 1
@@ -219,6 +221,7 @@ while True:
 		if message["Type"] == "Tank":
 			#print(message)
 			if message["Name"] != args.name:
+				enemy_id = message['Id']
 				enemy_position = (message["X"], message["Y"])
 				enemy_last_seen_time = current_time
 			else:
@@ -243,14 +246,15 @@ while True:
 		snitch_picked_up["holder"] = message["id"]
 
 	if my_position and enemy_position and current_time - enemy_last_seen_time < 10 and my_ammo > 0 and not should_i_score:
-		#GameServer.sendMessage(ServerMessageTypes.STOPALL)
-		heading = 360 - GetHeading(my_position[0], my_position[1], enemy_position[0], enemy_position[1])
-		GameServer.sendMessage(ServerMessageTypes.TURNTURRETTOHEADING, {"Amount": heading})
-		GameServer.sendMessage(ServerMessageTypes.FIRE)
+		attack.attack(GameServer, my_position, enemy_position, enemy_id, my_turret_heading, current_time)
+		# #GameServer.sendMessage(ServerMessageTypes.STOPALL)
+		# heading = 360 - GetHeading(my_position[0], my_position[1], enemy_position[0], enemy_position[1])
+		# GameServer.sendMessage(ServerMessageTypes.TURNTURRETTOHEADING, {"Amount": heading})
+		# GameServer.sendMessage(ServerMessageTypes.FIRE)
 
-		new_x, new_y = random.randint(int(my_position[0]) - 10, int(my_position[0]) + 10), random.randint(int(my_position[1]) - 10, int(my_position[1]) + 10)
-		go.go(GameServer, my_position[0], my_position[1], new_x, new_y)
-		logging.info(f"Turning to heading {heading}")
+		# new_x, new_y = random.randint(int(my_position[0]) - 10, int(my_position[0]) + 10), random.randint(int(my_position[1]) - 10, int(my_position[1]) + 10)
+		# go.go(GameServer, my_position[0], my_position[1], new_x, new_y)
+		# logging.info(f"Turning to heading {heading}")
 	elif my_ammo == 0 and not should_i_score:
 		recent_ammo = GetClosestPickup(visible_pickups, my_position[0], my_position[1], "AmmoPickup")
 		logging.info(recent_ammo)
