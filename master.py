@@ -205,6 +205,7 @@ my_ammo = 1
 my_position = None
 my_heading = None
 my_turret_heading = None
+snitch_picked_up = {'flag': False, 'holder': None}
 
 visible_pickups = {}
 while True:
@@ -229,6 +230,10 @@ while True:
 
 	elif message["messageType"] == ServerMessageTypes.KILL:
 		score.score(GameServer, my_position)
+	
+	elif message["messageType"] == ServerMessageTypes.SNITCHPICKUP:
+		snitch_picked_up["flag"] = True
+		snitch_picked_up["holder"] = message["id"]
 
 	if my_position and enemy_position and current_time - enemy_last_seen_time < 3:
 		heading = 360 - GetHeading(my_position[0], my_position[1], enemy_position[0], enemy_position[1])
