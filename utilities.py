@@ -16,6 +16,23 @@ def GetHeading(x1,y1,x2,y2):
 	print(heading)
 	return math.fabs(heading)
 
+def out_of_bounds(curr_x, curr_y):
+    arena_bounds = {
+        "posX": 65,
+        "negX": -65,
+        "posY": 95,
+        "negY": -95
+    }
+
+    if (curr_x > arena_bounds["posX"] or curr_x < arena_bounds["negX"]) or (curr_y > arena_bounds["posY"] or curr_y < arena_bounds["negY"]):
+        return True
+    else:
+        return False	
+
+def normalise_angle(angle, increase):
+	return (angle + increase) % 360
+
+
 class ServerMessageTypes(object):
 	TEST = 0
 	CREATETANK = 1
