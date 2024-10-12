@@ -4,8 +4,8 @@ from utilities import *
 def score(GameServer, my_position):
     closest_goal = None
     closest_dist = None
-    blue = (0, 100)
-    orange = (0, -100)
+    blue = (0, 106)
+    orange = (0, -106)
 
     blue_dist = CalculateDistance(my_position[0], my_position[1], blue[0], blue[1])
     orange_dist = CalculateDistance(
