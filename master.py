@@ -199,6 +199,10 @@ GameServer = ServerComms(args.hostname, args.port)
 logging.info("Creating tank with name '{}'".format(args.name))
 GameServer.sendMessage(ServerMessageTypes.CREATETANK, {'Name': args.name})
 
+if not ':' in args.name:
+	raise RuntimeError("You forgot to provide the team name followed by a ':' before the bot's name")
+my_team = args.name.split(':')[0]
+
 # Main loop - read game messages, ignore them and randomly perform actions
 current_time = 0
 enemy_id = None
@@ -206,26 +210,25 @@ enemy_position = None
 enemy_last_seen_time = -1000
 my_health = 1
 my_ammo = 1
-my_position = None
-my_heading = None
-my_turret_heading = None
+my_position = (0,0)
+my_heading = 0
+my_turret_heading = 0
 snitch_picked_up = {'flag': False, 'holder': None}
 
 should_i_score = False
 
 visible_pickups = {}
-friendly_tanks = {"placeholder1", "placeholder2", "placeholder3", "placeholder4"}
 while True:
 	################## do message handling here
 	message = GameServer.readMessage()
 	if message["messageType"] == ServerMessageTypes.OBJECTUPDATE:
 		if message["Type"] == "Tank":
 			#print(message)
-			if message["Name"] != args.name:
+			if message["Name"] != args.name and my_team not in message['Name']:
 				enemy_id = message['Id']
 				enemy_position = (message["X"], message["Y"])
 				enemy_last_seen_time = current_time
-			elif message["Name"] not in friendly_tanks:
+			else:
 				my_position = (message["X"], message["Y"])
 				my_health = message['Health']
 				my_ammo = message['Ammo']
