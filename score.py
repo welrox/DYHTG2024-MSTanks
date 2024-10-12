@@ -1,11 +1,11 @@
 from utilities import *
-
+import go
 
 def score(GameServer, my_position):
     closest_goal = None
     closest_dist = None
-    blue = (0, 106)
-    orange = (0, -106)
+    blue = (0, 100)
+    orange = (0, -100)
 
     blue_dist = CalculateDistance(my_position[0], my_position[1], blue[0], blue[1])
     orange_dist = CalculateDistance(
@@ -19,10 +19,12 @@ def score(GameServer, my_position):
         closest_goal = orange
         closest_dist = orange_dist
 
-    heading = GetHeading(
-        my_position[0], my_position[1], closest_goal[0], closest_goal[1]
-    )
-    GameServer.sendMessage(ServerMessageTypes.TURNTOHEADING, {"Amount": 360-heading})
-    GameServer.sendMessage(
-        ServerMessageTypes.MOVEFORWARDDISTANCE, {"Amount": closest_dist+10}
-    )
+    go.go(GameServer, my_position[0], my_position[1], closest_goal[0], closest_goal[1])
+
+    # heading = GetHeading(
+    #     my_position[0], my_position[1], closest_goal[0], closest_goal[1]
+    # )
+    # GameServer.sendMessage(ServerMessageTypes.TURNTOHEADING, {"Amount": 360-heading})
+    # GameServer.sendMessage(
+    #     ServerMessageTypes.MOVEFORWARDDISTANCE, {"Amount": closest_dist}
+    # )

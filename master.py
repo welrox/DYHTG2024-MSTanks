@@ -240,7 +240,7 @@ while True:
 	
 	elif message["messageType"] == ServerMessageTypes.SNITCHPICKUP:
 		snitch_picked_up["flag"] = True
-		snitch_picked_up["holder"] = message["Id"]
+		snitch_picked_up["holder"] = message["id"]
 
 	if my_position and enemy_position and current_time - enemy_last_seen_time < 3 and my_ammo > 0 and not should_i_score:
 		GameServer.sendMessage(ServerMessageTypes.STOPALL)
@@ -252,14 +252,15 @@ while True:
 		go.go(GameServer, my_position[0], my_position[1], new_x, new_y)
 		logging.info(f"Turning to heading {heading}")
 	elif my_ammo == 0 and not should_i_score:
-		recent_ammo = GetMostRecentlySeenAmmo(visible_pickups, GameServer, my_position[0], my_position[1])
+		recent_ammo = Get(visible_pickups, GameServer, my_position[0], my_position[1])
 		logging.info(recent_ammo)
 		if recent_ammo:
 			go.go_and_look(GameServer, my_position[0], my_position[1], recent_ammo[0], recent_ammo[1])
 		else:
 			go.go_and_look(GameServer, my_position[0], my_position[1], 0, 0)
-	else:
-		hunt.hunt(GameServer, my_position[0], my_position[1])
+	elif not should_i_score:
+		hunt.hunt(GameServer, my_position[0], my_position[1], my_turret_heading)
+
 	
 	# remove any pickups that we haven't seen in a while
 	visible_pickups = {position:pickup for position,pickup in visible_pickups.items() if current_time - pickup['TimeSeen'] < 5}
