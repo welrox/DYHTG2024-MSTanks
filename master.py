@@ -242,12 +242,12 @@ while True:
 		snitch_picked_up["flag"] = True
 		snitch_picked_up["holder"] = message["id"]
 
-	if my_position and enemy_position and current_time - enemy_last_seen_time < 3 and my_ammo > 0 and not should_i_score:
-		GameServer.sendMessage(ServerMessageTypes.STOPALL)
+	if my_position and enemy_position and current_time - enemy_last_seen_time < 10 and my_ammo > 0 and not should_i_score:
+		#GameServer.sendMessage(ServerMessageTypes.STOPALL)
 		heading = 360 - GetHeading(my_position[0], my_position[1], enemy_position[0], enemy_position[1])
 		GameServer.sendMessage(ServerMessageTypes.TURNTURRETTOHEADING, {"Amount": heading})
 		GameServer.sendMessage(ServerMessageTypes.FIRE)
-  
+
 		new_x, new_y = random.randint(int(my_position[0]) - 10, int(my_position[0]) + 10), random.randint(int(my_position[1]) - 10, int(my_position[1]) + 10)
 		go.go(GameServer, my_position[0], my_position[1], new_x, new_y)
 		logging.info(f"Turning to heading {heading}")
