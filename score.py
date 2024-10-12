@@ -18,7 +18,7 @@ def score(GameServer, my_position):
         closest_goal = orange
 
     go.go(GameServer, my_position[0], my_position[1], closest_goal[0], closest_goal[1]*0.8)
-    sleep(8)
+    sleep((CalculateDistance(my_position[0], my_position[1], closest_goal[0], closest_goal[1])*0.8)/TANK_SPEED)
     go.go(GameServer, my_position[0], my_position[1], closest_goal[0], closest_goal[1]*1.5)
     
 
