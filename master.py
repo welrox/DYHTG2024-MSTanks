@@ -238,7 +238,7 @@ while True:
 	elif message["messageType"] == ServerMessageTypes.KILL:
 		should_i_score = True
 		score.score(GameServer, my_position)
-	elif message['messageType'] == ServerMessageTypes.ENTEREDGOAL:
+	elif message['messageType'] == ServerMessageTypes.ENTEREDGOAL or message["messageType"] == ServerMessageTypes.DESTROYED:
 		should_i_score = False
 	
 	elif message["messageType"] == ServerMessageTypes.SNITCHPICKUP:
