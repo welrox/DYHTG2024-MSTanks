@@ -228,7 +228,7 @@ while True:
 				enemy_id = message['Id']
 				enemy_position = (message["X"], message["Y"])
 				enemy_last_seen_time = current_time
-			else:
+			elif message["Name"] == args.name:
 				my_position = (message["X"], message["Y"])
 				my_health = message['Health']
 				my_ammo = message['Ammo']
