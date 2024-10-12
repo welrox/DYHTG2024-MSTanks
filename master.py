@@ -208,6 +208,8 @@ my_heading = None
 my_turret_heading = None
 snitch_picked_up = {'flag': False, 'holder': None}
 
+should_i_score = False
+
 visible_pickups = {}
 while True:
 	################## do message handling here
@@ -230,13 +232,16 @@ while True:
 			visible_pickups[pickup_position] = pickup
 
 	elif message["messageType"] == ServerMessageTypes.KILL:
+		should_i_score = True
 		score.score(GameServer, my_position)
+	elif message['messageType'] == ServerMessageTypes.ENTEREDGOAL:
+		should_i_score = False
 	
 	elif message["messageType"] == ServerMessageTypes.SNITCHPICKUP:
 		snitch_picked_up["flag"] = True
 		snitch_picked_up["holder"] = message["id"]
 
-	if my_position and enemy_position and current_time - enemy_last_seen_time < 3 and my_ammo > 0:
+	if my_position and enemy_position and current_time - enemy_last_seen_time < 3 and my_ammo > 0 and not should_i_score:
 		GameServer.sendMessage(ServerMessageTypes.STOPALL)
 		heading = 360 - GetHeading(my_position[0], my_position[1], enemy_position[0], enemy_position[1])
 		GameServer.sendMessage(ServerMessageTypes.TURNTURRETTOHEADING, {"Amount": heading})
@@ -245,7 +250,7 @@ while True:
 		new_x, new_y = random.randint(int(my_position[0]) - 10, int(my_position[0]) + 10), random.randint(int(my_position[1]) - 10, int(my_position[1]) + 10)
 		go.go(GameServer, my_position[0], my_position[1], new_x, new_y)
 		logging.info(f"Turning to heading {heading}")
-	elif my_ammo == 0:
+	elif my_ammo == 0 and not should_i_score:
 		recent_ammo = GetMostRecentlySeenAmmo(visible_pickups, GameServer, my_position[0], my_position[1])
 		logging.info(recent_ammo)
 		if recent_ammo:
