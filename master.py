@@ -214,6 +214,7 @@ snitch_picked_up = {'flag': False, 'holder': None}
 should_i_score = False
 
 visible_pickups = {}
+friendly_tanks = {"placeholder1", "placeholder2", "placeholder3", "placeholder4"}
 while True:
 	################## do message handling here
 	message = GameServer.readMessage()
@@ -224,7 +225,7 @@ while True:
 				enemy_id = message['Id']
 				enemy_position = (message["X"], message["Y"])
 				enemy_last_seen_time = current_time
-			else:
+			elif message["name"] not in friendly_tanks:
 				my_position = (message["X"], message["Y"])
 				my_health = message['Health']
 				my_ammo = message['Ammo']
