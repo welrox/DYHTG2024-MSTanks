@@ -225,7 +225,7 @@ while True:
 				enemy_id = message['Id']
 				enemy_position = (message["X"], message["Y"])
 				enemy_last_seen_time = current_time
-			elif message["name"] not in friendly_tanks:
+			elif message["Name"] not in friendly_tanks:
 				my_position = (message["X"], message["Y"])
 				my_health = message['Health']
 				my_ammo = message['Ammo']
