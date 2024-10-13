@@ -221,35 +221,37 @@ visible_pickups = {}
 while True:
 	################## do message handling here
 	message = GameServer.readMessage()
-	if message["messageType"] == ServerMessageTypes.OBJECTUPDATE:
-		if message["Type"] == "Tank":
+ 
+	match message["messageType"]:
+		case ServerMessageTypes.OBJECTUPDATE:
+			if message["Type"] == "Tank":
 			#print(message)
-			if message["Name"] != args.name and my_team not in message['Name']:
-				enemy_id = message['Id']
-				enemy_position = (message["X"], message["Y"])
-				enemy_last_seen_time = current_time
-			elif message["Name"] == args.name:
-				my_position = (message["X"], message["Y"])
-				my_health = message['Health']
-				my_ammo = message['Ammo']
-				my_heading = message['Heading']
-				my_turret_heading = message['TurretHeading']
-		else:
-			pickup = {'Type': message['Type'], 'X': message['X'], 'Y': message['Y'], 'TimeSeen': current_time}
-			pickup_position = (message['X'], message['Y'])
-			visible_pickups[pickup_position] = pickup
-
-	elif message["messageType"] == ServerMessageTypes.KILL:
-		should_i_score = True
-		score.score(GameServer, my_position)
-	elif message['messageType'] == ServerMessageTypes.ENTEREDGOAL or message["messageType"] == ServerMessageTypes.DESTROYED:
-		should_i_score = False
+				if message["Name"] != args.name and my_team not in message['Name']:
+					enemy_id = message['Id']
+					enemy_position = (message["X"], message["Y"])
+					enemy_last_seen_time = current_time
+				elif message["Name"] == args.name:
+					my_position = (message["X"], message["Y"])
+					my_health = message['Health']
+					my_ammo = message['Ammo']
+					my_heading = message['Heading']
+					my_turret_heading = message['TurretHeading']
+			else:
+				pickup = {'Type': message['Type'], 'X': message['X'], 'Y': message['Y'], 'TimeSeen': current_time}
+				pickup_position = (message['X'], message['Y'])
+				visible_pickups[pickup_position] = pickup
+		case ServerMessageTypes.KILL:
+			should_i_score = True
+			score.score(GameServer, my_position)
+		case ServerMessageTypes.ENTEREDGOAL | ServerMessageTypes.DESTROYED:
+			should_i_score = False
+			hunt.hunt(GameServer, my_position[0], my_position[1], my_turret_heading)
+		case ServerMessageTypes.SNITCHPICKUP:
+			snitch_picked_up["flag"] = True
+			snitch_picked_up["holder"] = message["Id"]
+			
 	
-	elif message["messageType"] == ServerMessageTypes.SNITCHPICKUP:
-		snitch_picked_up["flag"] = True
-		snitch_picked_up["holder"] = message["Id"]
-
-	if my_position and enemy_position and (current_time - enemy_last_seen_time < 10) and my_ammo > 0 and my_health > 1:
+	if my_position and enemy_position and current_time - enemy_last_seen_time < 10 and my_ammo > 0 and my_health > 1:
 		if should_i_score:
 			attack.attack_but_dont_strafe(GameServer, my_position, enemy_position, enemy_id, my_turret_heading, current_time)
 		else:
