@@ -283,6 +283,8 @@ while True:
 
 	elif not should_i_score:
 		hunt.hunt(GameServer, my_position[0], my_position[1], my_turret_heading)
+	else:
+		GameServer.sendMessage(ServerMessageTypes.TOGGLETURRETRIGHT)
 
 	
 	# remove any pickups that we haven't seen in a while
