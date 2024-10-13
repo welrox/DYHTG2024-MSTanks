@@ -249,7 +249,7 @@ while True:
 		snitch_picked_up["flag"] = True
 		snitch_picked_up["holder"] = message["Id"]
 
-	if my_position and enemy_position and current_time - enemy_last_seen_time < 10 and my_ammo > 0 and my_health > 1:
+	if my_position and enemy_position and (current_time - enemy_last_seen_time < 10) and my_ammo > 0 and my_health > 1:
 		if should_i_score:
 			attack.attack_but_dont_strafe(GameServer, my_position, enemy_position, enemy_id, my_turret_heading, current_time)
 		else:
@@ -259,9 +259,11 @@ while True:
 		recent_health = GetClosestPickup(visible_pickups, my_position[0], my_position[1], "HealthPickup")
 		logging.info(recent_health)
 		if recent_health:
-			go.go_and_look(GameServer, my_position[0], my_position[1], recent_health[0], recent_health[1])
+			health_x = recent_health[0]
+			health_y = recent_health[1]
+			go.go_and_look_attack(GameServer, my_position, health_x, health_y, enemy_position, enemy_id, my_turret_heading, current_time)
 		else:
-			go.go_and_look(GameServer, my_position[0], my_position[1], 0, 0)
+			go.go_and_look_attack(GameServer, my_position, 0, 0, enemy_position, enemy_id, my_turret_heading, current_time)
    
 	elif my_ammo == 0 and not should_i_score:
 		recent_ammo = GetClosestPickup(visible_pickups, my_position[0], my_position[1], "AmmoPickup")
@@ -276,7 +278,7 @@ while True:
 
 	
 	# remove any pickups that we haven't seen in a while
-	visible_pickups = {position:pickup for position,pickup in visible_pickups.items() if current_time - pickup['TimeSeen'] < 5}
+	visible_pickups = {position:pickup for position,pickup in visible_pickups.items() if current_time - pickup['TimeSeen'] < 20}
 
 	print(f"health: {my_health}, ammo: {my_ammo}")
 
