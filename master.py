@@ -263,9 +263,15 @@ while True:
 		if recent_health:
 			health_x = recent_health[0]
 			health_y = recent_health[1]
-			go.go_and_look_attack(GameServer, my_position, health_x, health_y, enemy_position, enemy_id, my_turret_heading, current_time)
+			go.go(GameServer, my_position[0], my_position[1], health_x, health_y)
 		else:
-			go.go_and_look_attack(GameServer, my_position, 0, 0, enemy_position, enemy_id, my_turret_heading, current_time)
+			go.go(GameServer, my_position[0], my_position[1], 0, 0)
+		# attack enemy while going for health if we can
+		if my_position and enemy_position and current_time - enemy_last_seen_time < 10 and my_ammo > 0:
+			attack.attack_but_dont_strafe(GameServer, my_position, enemy_position, enemy_id, my_turret_heading, current_time)
+		else:
+			# spin
+			GameServer.sendMessage(ServerMessageTypes.TOGGLETURRETRIGHT)
    
 	elif my_ammo == 0 and not should_i_score:
 		recent_ammo = GetClosestPickup(visible_pickups, my_position[0], my_position[1], "AmmoPickup")
